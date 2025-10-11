@@ -20,6 +20,12 @@ func NewDepositRepository() *DepositRepository {
 	return &DepositRepository{}
 }
 
+func (r *DepositRepository) FindOwnerWallets(ownerID string) ([]Wallet, error) {
+	var wallets []Wallet
+	result := database.DB.Where("owner_id = ?", ownerID).Find(&wallets)
+	return wallets, result.Error
+}
+
 // FindWalletByName finds a wallet by its name
 func (r *DepositRepository) FindWalletByName(name string) (*Wallet, error) {
 	var wallet Wallet

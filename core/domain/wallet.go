@@ -1,7 +1,7 @@
 package domain
 
 type Wallet struct {
-	ID      string
-	Name    string
-	Balance int
+	ID      string `json:"id"`
+	Name    string `json:"name"`
+	Balance int    `json:"balance"`
 }
