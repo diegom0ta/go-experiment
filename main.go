@@ -20,10 +20,13 @@ func main() {
 	}
 	defer cache.Close()
 
-	// Start the server
+	// Create server and router
 	server := server.NewServer()
-	server.Start()
-
 	router := router.NewRouter(server)
+
+	// Setup routes first
 	router.Start()
+
+	// Then start the server (this will block)
+	server.Start()
 }
