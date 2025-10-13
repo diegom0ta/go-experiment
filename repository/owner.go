@@ -35,24 +35,24 @@ func (r *OwnerRepository) CreateOwner(owner *domain.Owner) error {
 	return nil
 }
 
-func (r *OwnerRepository) GetOwnerByID(ownerID string) (*domain.Owner, error) {
-	logger.WithField("owner_id", ownerID).Debug("Fetching owner by ID")
+func (r *OwnerRepository) GetOwnerByEmail(email string) (*domain.Owner, error) {
+	logger.WithField("email", email).Debug("Fetching owner by email")
 
 	var owner domain.Owner
-	result := database.DB.First(&owner, "id = ?", ownerID)
+	result := database.DB.First(&owner, "email = ?", email)
 	if result.Error != nil {
 		if result.Error == sql.ErrNoRows {
-			logger.WithField("owner_id", ownerID).Warn("Owner not found")
+			logger.WithField("email", email).Warn("Owner not found")
 			return nil, nil
 		}
 		logger.WithFields(logrus.Fields{
-			"owner_id": ownerID,
-			"error":    result.Error.Error(),
+			"email": email,
+			"error": result.Error.Error(),
 		}).Error("Failed to fetch owner")
 		return nil, result.Error
 	}
 
-	logger.WithField("owner_id", ownerID).Debug("Owner fetched successfully")
+	logger.WithField("owner_email", owner.Email).Debug("Owner fetched successfully")
 	return &owner, nil
 }
 

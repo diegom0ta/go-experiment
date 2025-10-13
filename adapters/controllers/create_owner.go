@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"context"
 	"experiment/adapters/presenters/input"
 	"experiment/core/domain"
 	"experiment/usecases"
@@ -9,7 +10,7 @@ import (
 )
 
 type CreateOwnerController interface {
-	HandleCreateOwner(owner *input.OwnerInput) error
+	HandleCreateOwner(ctx context.Context, owner *input.OwnerInput) error
 }
 
 type createOwnerController struct {
@@ -20,10 +21,10 @@ func NewCreateOwnerController(cou usecases.CreateOwnerUseCase) *createOwnerContr
 	return &createOwnerController{createOwnerUseCase: cou}
 }
 
-func (coc *createOwnerController) HandleCreateOwner(owner *input.OwnerInput) error {
+func (coc *createOwnerController) HandleCreateOwner(ctx context.Context, owner *input.OwnerInput) error {
 	uuid := uuid.New().String()
 
-	return coc.createOwnerUseCase.Execute(&domain.Owner{
+	return coc.createOwnerUseCase.Execute(ctx, &domain.Owner{
 		ID:        uuid,
 		OwnerName: owner.Name,
 		Email:     owner.Email,

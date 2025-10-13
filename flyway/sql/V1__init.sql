@@ -3,7 +3,7 @@
 CREATE TABLE owners (
     id VARCHAR(255) PRIMARY KEY,
     owner_name VARCHAR(255) NOT NULL,
-    email VARCHAR(255) NOT NULL,
+    email VARCHAR(255) NOT NULL UNIQUE,
     document VARCHAR(255) NOT NULL
 );
 

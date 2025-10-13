@@ -1,4 +1,4 @@
-package cache
+package services
 
 import (
 	"context"
@@ -60,25 +60,31 @@ func (wc *WalletCache) DeleteWallet(ctx context.Context, walletID string) error 
 	return cache.RedisClient.Del(ctx, key).Err()
 }
 
+type OwnerCache struct{}
+
+func NewOwnerCache() *OwnerCache {
+	return &OwnerCache{}
+}
+
 // CacheOwner stores an owner in Redis with default 72-hour TTL
-func (wc *WalletCache) CacheOwner(ctx context.Context, owner *domain.Owner) error {
-	return wc.CacheOwnerWithTTL(ctx, owner, DefaultTTL)
+func (oc *OwnerCache) CacheOwner(ctx context.Context, owner *domain.Owner) error {
+	return oc.CacheOwnerWithTTL(ctx, owner, DefaultTTL)
 }
 
 // CacheOwnerWithTTL stores an owner in Redis with custom TTL
-func (wc *WalletCache) CacheOwnerWithTTL(ctx context.Context, owner *domain.Owner, ttl time.Duration) error {
+func (oc *OwnerCache) CacheOwnerWithTTL(ctx context.Context, owner *domain.Owner, ttl time.Duration) error {
 	data, err := json.Marshal(owner)
 	if err != nil {
 		return err
 	}
 
-	key := fmt.Sprintf("owner:%s", owner.ID)
+	key := fmt.Sprintf("owner:%s", owner.Email)
 	return cache.RedisClient.Set(ctx, key, data, ttl).Err()
 }
 
 // GetOwner retrieves an owner from Redis
-func (wc *WalletCache) GetOwner(ctx context.Context, ownerID string) (*domain.Owner, error) {
-	key := fmt.Sprintf("owner:%s", ownerID)
+func (oc *OwnerCache) GetOwner(ctx context.Context, email string) (*domain.Owner, error) {
+	key := fmt.Sprintf("owner:email:%s", email)
 	data, err := cache.RedisClient.Get(ctx, key).Result()
 	if err != nil {
 		return nil, err
@@ -94,7 +100,7 @@ func (wc *WalletCache) GetOwner(ctx context.Context, ownerID string) (*domain.Ow
 }
 
 // DeleteOwner removes an owner from Redis
-func (wc *WalletCache) DeleteOwner(ctx context.Context, ownerID string) error {
-	key := fmt.Sprintf("owner:%s", ownerID)
+func (oc *OwnerCache) DeleteOwner(ctx context.Context, email string) error {
+	key := fmt.Sprintf("owner:email:%s", email)
 	return cache.RedisClient.Del(ctx, key).Err()
 }

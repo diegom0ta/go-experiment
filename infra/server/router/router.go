@@ -6,6 +6,7 @@ import (
 	"experiment/adapters/presenters"
 	"experiment/infra/server"
 	"experiment/repository"
+	"experiment/services"
 	"experiment/usecases"
 	"fmt"
 	"net/http"
@@ -20,18 +21,26 @@ func NewRouter(srv *server.Server) *Router {
 }
 
 func (r *Router) SetupRoutes(mux *http.ServeMux) {
-
 	ownerRepo := repository.NewOwnerRepository()
-	createOwnerUC := usecases.NewCreateOwnerUseCase(ownerRepo)
+	ownerCache := services.NewOwnerCache()
+
+	createOwnerUC := usecases.NewCreateOwnerUseCase(ownerRepo, ownerCache)
 	createOwnerController := controllers.NewCreateOwnerController(createOwnerUC)
 	createOwnerPresenter := presenters.NewCreateOwnerPresenter()
-	ownerHandler := handlers.NewOwnerHandler(createOwnerController, createOwnerPresenter)
+
+	getOwnerByEmailUC := usecases.NewGetOwnerByEmailUseCase(ownerRepo, ownerCache)
+	getOwnerController := controllers.NewGetOwnerByEmailController(getOwnerByEmailUC)
+	getOwnerPresenter := presenters.NewGetOwnerPresenter()
+
+	ownerHandler := handlers.NewOwnerHandler(createOwnerController, createOwnerPresenter, getOwnerController, getOwnerPresenter)
 
 	mux.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintln(w, "OK")
 	})
 
 	mux.HandleFunc("/owner/create", ownerHandler.CreateOwner)
+
+	mux.HandleFunc("/owner", ownerHandler.GetOwnerByEmail)
 }
 
 func (r *Router) Start() {

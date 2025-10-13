@@ -1,22 +1,37 @@
 package usecases
 
 import (
+	"context"
+	"errors"
 	"experiment/core/domain"
+	"experiment/infra/logger"
 	"experiment/ports"
 )
 
+var ErrOwnerAlreadyExists = errors.New("owner already exists")
+
 type CreateOwnerUseCase interface {
-	Execute(owner *domain.Owner) error
+	Execute(ctx context.Context, owner *domain.Owner) error
 }
 
 type createOwnerUseCase struct {
-	ownerRepo ports.OwnerRepository
+	ownerRepo  ports.OwnerRepository
+	ownerCache ports.OwnerCache
 }
 
-func NewCreateOwnerUseCase(ownerRepo ports.OwnerRepository) *createOwnerUseCase {
-	return &createOwnerUseCase{ownerRepo: ownerRepo}
+func NewCreateOwnerUseCase(ownerRepo ports.OwnerRepository, ownerCache ports.OwnerCache) *createOwnerUseCase {
+	return &createOwnerUseCase{ownerRepo: ownerRepo, ownerCache: ownerCache}
 }
 
-func (couc *createOwnerUseCase) Execute(owner *domain.Owner) error {
-	return couc.ownerRepo.CreateOwner(owner)
+func (couc *createOwnerUseCase) Execute(ctx context.Context, owner *domain.Owner) error {
+	if existing, err := couc.ownerRepo.GetOwnerByEmail(owner.Email); err != nil {
+		logger.Error("Error checking if owner exists: ", err)
+		return err
+	} else if existing != nil {
+		logger.Warn("Owner already exists with email: ", owner.Email)
+		return ErrOwnerAlreadyExists
+	}
+
+	couc.ownerCache.CacheOwner(ctx, owner)
+	return nil
 }
