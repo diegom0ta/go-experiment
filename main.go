@@ -17,7 +17,7 @@ func main() {
 	if err := database.InitDB(); err != nil {
 		logger.Fatalf("failed to connect to database: %v", err)
 	}
-	logger.Info("Database connection established")
+	log.Info("Database connection established")
 
 	// Initialize Redis connection
 	if err := cache.InitRedis(); err != nil {
@@ -25,11 +25,11 @@ func main() {
 	}
 	defer func() {
 		if err := cache.Close(); err != nil {
-			logger.Errorf("failed to close redis connection: %v", err)
+			log.Errorf("failed to close redis connection: %v", err)
 		}
 	}()
 
-	logger.Info("Redis connection established")
+	log.Info("Redis connection established")
 
 	// Create server and router
 	srv := server.NewServer()
@@ -37,7 +37,7 @@ func main() {
 
 	// Setup routes first
 	routers.Start()
-	logger.Info("Routes configured")
+	log.Info("Routes configured")
 
 	// Then start the server (this will block)
 	srv.Start()
