@@ -14,7 +14,7 @@ type getOwnerByEmailController struct {
 	getOwnerByEmailUseCase usecases.GetOwnerByEmailUseCase
 }
 
-func NewGetOwnerByEmailController(gou usecases.GetOwnerByEmailUseCase) *getOwnerByEmailController {
+func NewGetOwnerByEmailController(gou usecases.GetOwnerByEmailUseCase) GetOwnerByEmailController {
 	return &getOwnerByEmailController{getOwnerByEmailUseCase: gou}
 }
 

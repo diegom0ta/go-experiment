@@ -35,7 +35,10 @@ func (r *Router) SetupRoutes(mux *http.ServeMux) {
 	ownerHandler := handlers.NewOwnerHandler(createOwnerController, createOwnerPresenter, getOwnerController, getOwnerPresenter)
 
 	mux.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprintln(w, "OK")
+		_, err := fmt.Fprintln(w, "OK")
+		if err != nil {
+			http.Error(w, "internal server error", http.StatusInternalServerError)
+		}
 	})
 
 	mux.HandleFunc("/owner/create", ownerHandler.CreateOwner)

@@ -39,7 +39,7 @@ func (r *WalletRepository) GetWalletByID(walletID string) (*domain.Wallet, error
 	var wallet domain.Wallet
 	result := database.DB.First(&wallet, "id = ?", walletID)
 	if result.Error != nil {
-		if result.Error == gorm.ErrRecordNotFound {
+		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
 			return nil, nil
 		}
 		return nil, result.Error

@@ -2,6 +2,7 @@ package server
 
 import (
 	"context"
+	"errors"
 	"experiment/infra/logger"
 	"net/http"
 	"os"
@@ -29,7 +30,7 @@ func (s *Server) Start() {
 
 	go func() {
 		logger.Info("Starting server on :8080")
-		if err := s.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+		if err := s.ListenAndServe(); err != nil && errors.Is(err, http.ErrServerClosed) {
 			logger.Fatalf("HTTP server error: %v", err)
 		}
 	}()

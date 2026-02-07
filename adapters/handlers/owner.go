@@ -45,11 +45,17 @@ func (h *OwnerHandler) CreateOwner(w http.ResponseWriter, r *http.Request) {
 	if err := h.createOwnerController.HandleCreateOwner(ctx, &ownerInput); err.Error() == ErrorOwnerAlreadyExists.Error() {
 		w.WriteHeader(http.StatusConflict)
 		response := h.createOwnerPresenter.Present("Owner already exists")
-		json.NewEncoder(w).Encode(response)
+		err := json.NewEncoder(w).Encode(response)
+		if err != nil {
+			http.Error(w, "internal server error", http.StatusInternalServerError)
+		}
 	} else {
 		w.WriteHeader(http.StatusCreated)
 		response := h.createOwnerPresenter.Present("Owner created successfully")
-		json.NewEncoder(w).Encode(response)
+		err := json.NewEncoder(w).Encode(response)
+		if err != nil {
+			http.Error(w, "internal server error", http.StatusInternalServerError)
+		}
 	}
 }
 
@@ -93,5 +99,8 @@ func (h *OwnerHandler) GetOwnerByEmail(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 
 	response := h.getOwnerPresenter.Present(&o)
-	json.NewEncoder(w).Encode(response)
+	err = json.NewEncoder(w).Encode(response)
+	if err != nil {
+		http.Error(w, "internal server error", http.StatusInternalServerError)
+	}
 }

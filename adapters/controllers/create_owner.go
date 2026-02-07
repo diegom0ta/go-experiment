@@ -17,15 +17,15 @@ type createOwnerController struct {
 	createOwnerUseCase usecases.CreateOwnerUseCase
 }
 
-func NewCreateOwnerController(cou usecases.CreateOwnerUseCase) *createOwnerController {
+func NewCreateOwnerController(cou usecases.CreateOwnerUseCase) CreateOwnerController {
 	return &createOwnerController{createOwnerUseCase: cou}
 }
 
 func (coc *createOwnerController) HandleCreateOwner(ctx context.Context, owner *input.OwnerInput) error {
-	uuid := uuid.New().String()
+	id := uuid.New().String()
 
 	return coc.createOwnerUseCase.Execute(ctx, &domain.Owner{
-		ID:        uuid,
+		ID:        id,
 		OwnerName: owner.Name,
 		Email:     owner.Email,
 		Document:  owner.Document,

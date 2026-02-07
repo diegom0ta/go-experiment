@@ -10,7 +10,7 @@ type GetOwnerPresenter interface {
 
 type getOwnerPresenter struct{}
 
-func NewGetOwnerPresenter() *getOwnerPresenter {
+func NewGetOwnerPresenter() GetOwnerPresenter {
 	return &getOwnerPresenter{}
 }
 

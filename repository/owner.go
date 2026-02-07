@@ -2,6 +2,7 @@ package repository
 
 import (
 	"database/sql"
+	"errors"
 
 	"experiment/core/domain"
 	"experiment/infra/database"
@@ -41,7 +42,7 @@ func (r *OwnerRepository) GetOwnerByEmail(email string) (*domain.Owner, error) {
 	var owner domain.Owner
 	result := database.DB.First(&owner, "email = ?", email)
 	if result.Error != nil {
-		if result.Error == sql.ErrNoRows {
+		if errors.Is(result.Error, sql.ErrNoRows) || result.RowsAffected == 0 {
 			logger.WithField("email", email).Warn("Owner not found")
 			return nil, nil
 		}

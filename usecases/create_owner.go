@@ -19,7 +19,7 @@ type createOwnerUseCase struct {
 	ownerCache ports.OwnerCache
 }
 
-func NewCreateOwnerUseCase(ownerRepo ports.OwnerRepository, ownerCache ports.OwnerCache) *createOwnerUseCase {
+func NewCreateOwnerUseCase(ownerRepo ports.OwnerRepository, ownerCache ports.OwnerCache) CreateOwnerUseCase {
 	return &createOwnerUseCase{ownerRepo: ownerRepo, ownerCache: ownerCache}
 }
 
@@ -32,6 +32,10 @@ func (couc *createOwnerUseCase) Execute(ctx context.Context, owner *domain.Owner
 		return ErrOwnerAlreadyExists
 	}
 
-	couc.ownerCache.CacheOwner(ctx, owner)
+	err := couc.ownerCache.CacheOwner(ctx, owner)
+	if err != nil {
+		logger.Error("Error caching owner: ", err)
+		return err
+	}
 	return nil
 }

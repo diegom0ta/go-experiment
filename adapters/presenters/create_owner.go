@@ -11,7 +11,7 @@ type CreateOwnerPresenter interface {
 
 type createOwnerPresenter struct{}
 
-func NewCreateOwnerPresenter() *createOwnerPresenter {
+func NewCreateOwnerPresenter() CreateOwnerPresenter {
 	return &createOwnerPresenter{}
 }
 

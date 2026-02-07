@@ -50,7 +50,6 @@ func GetLogger() *logrus.Logger {
 	return instance
 }
 
-// Convenience functions for common log operations
 func Info(args ...interface{}) {
 	GetLogger().Info(args...)
 }
