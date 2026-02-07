@@ -23,17 +23,22 @@ func main() {
 	if err := cache.InitRedis(); err != nil {
 		logger.Fatalf("failed to connect to redis: %v", err)
 	}
-	defer cache.Close()
+	defer func() {
+		if err := cache.Close(); err != nil {
+			logger.Errorf("failed to close redis connection: %v", err)
+		}
+	}()
+
 	logger.Info("Redis connection established")
 
 	// Create server and router
-	server := server.NewServer()
-	router := router.NewRouter(server)
+	srv := server.NewServer()
+	routers := router.NewRouter(srv)
 
 	// Setup routes first
-	router.Start()
+	routers.Start()
 	logger.Info("Routes configured")
 
 	// Then start the server (this will block)
-	server.Start()
+	srv.Start()
 }
