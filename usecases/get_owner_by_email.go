@@ -6,7 +6,7 @@ import (
 	"experiment/ports"
 )
 
-type GetOwnerByEmailUseCase interface {
+type IGetOwnerByEmailUseCase interface {
 	Execute(ctx context.Context, email string) (*domain.Owner, error)
 }
 
@@ -15,7 +15,7 @@ type getOwnerByEmailUseCase struct {
 	ownerCache ports.OwnerCache
 }
 
-func NewGetOwnerByEmailUseCase(ownerRepo ports.OwnerRepository, ownerCache ports.OwnerCache) *getOwnerByEmailUseCase {
+func NewGetOwnerByEmailUseCase(ownerRepo ports.OwnerRepository, ownerCache ports.OwnerCache) IGetOwnerByEmailUseCase {
 	return &getOwnerByEmailUseCase{ownerRepo: ownerRepo, ownerCache: ownerCache}
 }
 

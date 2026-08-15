@@ -10,7 +10,7 @@ import (
 
 var ErrOwnerAlreadyExists = errors.New("owner already exists")
 
-type CreateOwnerUseCase interface {
+type ICreateOwnerUseCase interface {
 	Execute(ctx context.Context, owner *domain.Owner) error
 }
 
@@ -19,7 +19,7 @@ type createOwnerUseCase struct {
 	ownerCache ports.OwnerCache
 }
 
-func NewCreateOwnerUseCase(ownerRepo ports.OwnerRepository, ownerCache ports.OwnerCache) CreateOwnerUseCase {
+func NewCreateOwnerUseCase(ownerRepo ports.OwnerRepository, ownerCache ports.OwnerCache) ICreateOwnerUseCase {
 	return &createOwnerUseCase{ownerRepo: ownerRepo, ownerCache: ownerCache}
 }
 

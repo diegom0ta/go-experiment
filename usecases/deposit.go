@@ -4,7 +4,11 @@ import "errors"
 
 type deposit struct{}
 
-func NewDeposit() *deposit {
+type IDepositUseCase interface {
+	Execute(amount float64, currency string, walletName string) error
+}
+
+func NewDepositUseCase() IDepositUseCase {
 	return &deposit{}
 }
 
