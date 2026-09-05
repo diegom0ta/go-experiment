@@ -14,10 +14,10 @@ type CreateOwnerController interface {
 }
 
 type createOwnerController struct {
-	createOwnerUseCase usecases.CreateOwnerUseCase
+	createOwnerUseCase usecases.ICreateOwnerUseCase
 }
 
-func NewCreateOwnerController(cou usecases.CreateOwnerUseCase) CreateOwnerController {
+func NewCreateOwnerController(cou usecases.ICreateOwnerUseCase) CreateOwnerController {
 	return &createOwnerController{createOwnerUseCase: cou}
 }
 

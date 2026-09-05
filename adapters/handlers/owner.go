@@ -42,18 +42,20 @@ func (h *OwnerHandler) CreateOwner(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := h.createOwnerController.HandleCreateOwner(ctx, &ownerInput); err.Error() == ErrorOwnerAlreadyExists.Error() {
+	err := h.createOwnerController.HandleCreateOwner(ctx, &ownerInput)
+	switch {
+	case err != nil && err.Error() == ErrorOwnerAlreadyExists.Error():
 		w.WriteHeader(http.StatusConflict)
 		response := h.createOwnerPresenter.Present("Owner already exists")
-		err := json.NewEncoder(w).Encode(response)
-		if err != nil {
+		if err := json.NewEncoder(w).Encode(response); err != nil {
 			http.Error(w, "internal server error", http.StatusInternalServerError)
 		}
-	} else {
+	case err != nil:
+		http.Error(w, "internal server error", http.StatusInternalServerError)
+	default:
 		w.WriteHeader(http.StatusCreated)
 		response := h.createOwnerPresenter.Present("Owner created successfully")
-		err := json.NewEncoder(w).Encode(response)
-		if err != nil {
+		if err := json.NewEncoder(w).Encode(response); err != nil {
 			http.Error(w, "internal server error", http.StatusInternalServerError)
 		}
 	}

@@ -32,8 +32,12 @@ func (couc *createOwnerUseCase) Execute(ctx context.Context, owner *domain.Owner
 		return ErrOwnerAlreadyExists
 	}
 
-	err := couc.ownerCache.CacheOwner(ctx, owner)
-	if err != nil {
+	if err := couc.ownerRepo.CreateOwner(owner); err != nil {
+		logger.Error("Error creating owner: ", err)
+		return err
+	}
+
+	if err := couc.ownerCache.CacheOwner(ctx, owner); err != nil {
 		logger.Error("Error caching owner: ", err)
 		return err
 	}
