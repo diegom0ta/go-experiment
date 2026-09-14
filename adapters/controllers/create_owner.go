@@ -5,8 +5,7 @@ import (
 	"experiment/adapters/presenters/input"
 	"experiment/core/domain"
 	"experiment/usecases"
-
-	"github.com/google/uuid"
+	"uuid"
 )
 
 type CreateOwnerController interface {
@@ -22,7 +21,7 @@ func NewCreateOwnerController(cou usecases.ICreateOwnerUseCase) CreateOwnerContr
 }
 
 func (coc *createOwnerController) HandleCreateOwner(ctx context.Context, owner *input.OwnerInput) error {
-	id := uuid.New().String()
+	id := uuid.NewV7().String()
 
 	return coc.createOwnerUseCase.Execute(ctx, &domain.Owner{
 		ID:        id,
