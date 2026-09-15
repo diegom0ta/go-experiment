@@ -17,11 +17,12 @@ type ICreateWalletUseCase interface {
 type createWalletUseCase struct {
 	walletRepo  ports.WalletRepository
 	walletCache ports.WalletCache
-	getOwner    getOwnerByEmailUseCase
+	getOwner    IGetOwnerByEmailUseCase
+	ownerCache  ports.OwnerCache
 }
 
-func NewCreateWalletUseCase(walletRepo ports.WalletRepository, walletCache ports.WalletCache, getOwner getOwnerByEmailUseCase) ICreateWalletUseCase {
-	return &createWalletUseCase{walletRepo: walletRepo, walletCache: walletCache, getOwner: getOwner}
+func NewCreateWalletUseCase(walletRepo ports.WalletRepository, walletCache ports.WalletCache, getOwner IGetOwnerByEmailUseCase, ownerCache ports.OwnerCache) ICreateWalletUseCase {
+	return &createWalletUseCase{walletRepo: walletRepo, walletCache: walletCache, getOwner: getOwner, ownerCache: ownerCache}
 }
 
 func (cwuc *createWalletUseCase) Execute(ctx context.Context, email string, wallet *domain.Wallet) error {
@@ -44,10 +45,17 @@ func (cwuc *createWalletUseCase) Execute(ctx context.Context, email string, wall
 		}
 	}
 
+	wallet.OwnerID = owner.ID
+
 	err = cwuc.walletRepo.CreateWallet(wallet)
 	if err != nil {
 		logger.Error("Error creating wallet: ", err)
 		return err
+	}
+
+	// Invalidate cached owner so subsequent lookups reflect the new wallet
+	if err := cwuc.ownerCache.DeleteOwner(ctx, email); err != nil {
+		logger.Warn("Error invalidating owner cache: ", err)
 	}
 
 	return nil

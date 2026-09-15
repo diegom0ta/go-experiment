@@ -12,7 +12,7 @@ type WalletRepository interface {
 	GetWalletByID(walletID string) (*domain.Wallet, error)
 	GetAllWallets() ([]domain.Wallet, error)
 	DeleteWallet(walletID string) error
-	UpdateWallet(wallet *domain.Wallet) error
+	UpdateWalletByName(wallet *domain.Wallet) error
 	Deposit(walletName string, amount int) error
 	Withdraw(walletName string, amount int) error
 }

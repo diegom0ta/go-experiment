@@ -10,7 +10,7 @@ import (
 	"net/http"
 )
 
-var ErrorOwnerAlreadyExists = errors.New("owner already exists")
+var ErrOwnerAlreadyExists = errors.New("owner already exists")
 
 type OwnerHandler struct {
 	createOwnerController     controllers.CreateOwnerController
@@ -44,19 +44,19 @@ func (h *OwnerHandler) CreateOwner(w http.ResponseWriter, r *http.Request) {
 
 	err := h.createOwnerController.HandleCreateOwner(ctx, &ownerInput)
 	switch {
-	case err != nil && err.Error() == ErrorOwnerAlreadyExists.Error():
+	case err != nil && err.Error() == ErrOwnerAlreadyExists.Error():
 		w.WriteHeader(http.StatusConflict)
 		response := h.createOwnerPresenter.Present("Owner already exists")
 		if err := json.NewEncoder(w).Encode(response); err != nil {
-			http.Error(w, "internal server error", http.StatusInternalServerError)
+			http.Error(w, "Internal server error", http.StatusInternalServerError)
 		}
 	case err != nil:
-		http.Error(w, "internal server error", http.StatusInternalServerError)
+		http.Error(w, "Internal server error", http.StatusInternalServerError)
 	default:
 		w.WriteHeader(http.StatusCreated)
 		response := h.createOwnerPresenter.Present("Owner created successfully")
 		if err := json.NewEncoder(w).Encode(response); err != nil {
-			http.Error(w, "internal server error", http.StatusInternalServerError)
+			http.Error(w, "Internal server error", http.StatusInternalServerError)
 		}
 	}
 }
