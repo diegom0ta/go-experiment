@@ -19,8 +19,8 @@ func (r *WalletRepository) CreateWallet(wallet *domain.Wallet) error {
 	return database.DB.Create(wallet).Error
 }
 
-func (r *WalletRepository) FindOwnerWallets(ownerID string) ([]domain.Wallet, error) {
-	var wallets []domain.Wallet
+func (r *WalletRepository) FindOwnerWallets(ownerID string) ([]*domain.Wallet, error) {
+	var wallets []*domain.Wallet
 	result := database.DB.Where("owner_id = ?", ownerID).Find(&wallets)
 	return wallets, result.Error
 }
@@ -47,8 +47,8 @@ func (r *WalletRepository) GetWalletByID(walletID string) (*domain.Wallet, error
 	return &wallet, nil
 }
 
-func (r *WalletRepository) GetAllWallets() ([]domain.Wallet, error) {
-	var wallets []domain.Wallet
+func (r *WalletRepository) GetAllWallets() ([]*domain.Wallet, error) {
+	var wallets []*domain.Wallet
 	result := database.DB.Find(&wallets)
 	return wallets, result.Error
 }
