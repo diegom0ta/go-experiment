@@ -3,6 +3,6 @@ package domain
 type Wallet struct {
 	ID         string
 	WalletName string
-	Balance    int64
+	Balance    int
 	OwnerID    string
 }
