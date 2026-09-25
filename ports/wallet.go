@@ -13,8 +13,8 @@ type WalletRepository interface {
 	GetAllWallets() ([]*domain.Wallet, error)
 	DeleteWallet(walletID string) error
 	UpdateWalletByName(wallet *domain.Wallet) error
-	Deposit(walletName string, amount int) error
-	Withdraw(walletName string, amount int) error
+	Deposit(walletName string, amount int64) error
+	Withdraw(walletName string, amount int64) error
 }
 
 type WalletCache interface {

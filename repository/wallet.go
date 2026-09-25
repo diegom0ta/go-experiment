@@ -70,7 +70,7 @@ func (r *WalletRepository) UpdateWalletByName(wallet *domain.Wallet) error {
 }
 
 // Deposit adds the amount to the wallet's balance and saves it
-func (r *WalletRepository) Deposit(walletName string, amount int) error {
+func (r *WalletRepository) Deposit(walletName string, amount int64) error {
 	wallet, err := r.FindWalletByName(walletName)
 	if err != nil {
 		return err
@@ -82,7 +82,7 @@ func (r *WalletRepository) Deposit(walletName string, amount int) error {
 	return database.DB.Save(wallet).Error
 }
 
-func (r *WalletRepository) Withdraw(walletName string, amount int) error {
+func (r *WalletRepository) Withdraw(walletName string, amount int64) error {
 	wallet, err := r.FindWalletByName(walletName)
 	if err != nil {
 		return err
