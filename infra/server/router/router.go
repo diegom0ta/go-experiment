@@ -43,7 +43,11 @@ func (r *Router) SetupRoutes(mux *http.ServeMux) {
 	getWalletsByOwnerController := controllers.NewGetWalletsByOwnerController(getWalletsByOwnerUC)
 	getWalletsByOwnerPresenter := presenters.NewGetWalletsByOwnerPresenter()
 
-	walletHandler := handlers.NewWalletHandler(createWalletController, createWalletPresenter, getWalletsByOwnerController, getWalletsByOwnerPresenter)
+	depositUC := usecases.NewDepositUseCase(ownerRepo, walletRepo)
+	depositController := controllers.NewDepositController(depositUC)
+	depositPresenter := presenters.NewDepositPresenter()
+
+	walletHandler := handlers.NewWalletHandler(createWalletController, createWalletPresenter, getWalletsByOwnerController, getWalletsByOwnerPresenter, depositController, depositPresenter)
 
 	ownerHandler := handlers.NewOwnerHandler(createOwnerController, createOwnerPresenter, getOwnerController, getOwnerPresenter)
 
@@ -58,6 +62,7 @@ func (r *Router) SetupRoutes(mux *http.ServeMux) {
 	mux.HandleFunc("/owner", ownerHandler.GetOwnerByEmail)
 	mux.HandleFunc("/wallet/create", walletHandler.CreateWallet)
 	mux.HandleFunc("/wallets", walletHandler.GetOwnerWallets)
+	mux.HandleFunc("/wallet/deposit", walletHandler.Deposit)
 }
 
 func (r *Router) Start() {

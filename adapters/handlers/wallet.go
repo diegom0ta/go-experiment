@@ -17,17 +17,23 @@ type WalletHandler struct {
 	createWalletPresenter       presenters.CreateWalletPresenter
 	getWalletsByOwnerController controllers.GetWalletsByOwnerController
 	getWalletsByOwnerPresenter  presenters.GetWalletsByOwnerPresenter
+	depositController           controllers.DepositController
+	depositPresenter            presenters.DepositPresenter
 }
 
 func NewWalletHandler(createWalletController controllers.CreateWalletController,
 	createWalletPresenter presenters.CreateWalletPresenter,
 	getWalletsByOwnerController controllers.GetWalletsByOwnerController,
-	getWalletsByOwnerPresenter presenters.GetWalletsByOwnerPresenter) *WalletHandler {
+	getWalletsByOwnerPresenter presenters.GetWalletsByOwnerPresenter,
+	depositController controllers.DepositController,
+	depositPresenter presenters.DepositPresenter) *WalletHandler {
 	return &WalletHandler{
 		createWalletController:      createWalletController,
 		createWalletPresenter:       createWalletPresenter,
 		getWalletsByOwnerController: getWalletsByOwnerController,
 		getWalletsByOwnerPresenter:  getWalletsByOwnerPresenter,
+		depositController:           depositController,
+		depositPresenter:            depositPresenter,
 	}
 }
 
@@ -100,6 +106,37 @@ func (h *WalletHandler) GetOwnerWallets(w http.ResponseWriter, r *http.Request) 
 	}
 
 	response := h.getWalletsByOwnerPresenter.Present(walletsOutput)
+	if err := json.NewEncoder(w).Encode(response); err != nil {
+		http.Error(w, "internal server error", http.StatusInternalServerError)
+	}
+}
+
+func (h *WalletHandler) Deposit(w http.ResponseWriter, r *http.Request) {
+	email := r.URL.Query().Get("email")
+	if email == "" {
+		http.Error(w, "Email is required", http.StatusBadRequest)
+		return
+	}
+
+	if r.Method != http.MethodPost {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	var depositInput input.DepositInput
+	if err := json.NewDecoder(r.Body).Decode(&depositInput); err != nil {
+		http.Error(w, "Bad request", http.StatusBadRequest)
+		return
+	}
+
+	err := h.depositController.HandleDeposit(depositInput.Amount, depositInput.Currency, depositInput.Wallet.Name, email)
+	if err != nil {
+		http.Error(w, "internal server error", http.StatusInternalServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+	response := h.depositPresenter.Present(&output.DepositOutput{Message: "Deposit successful"})
 	if err := json.NewEncoder(w).Encode(response); err != nil {
 		http.Error(w, "internal server error", http.StatusInternalServerError)
 	}

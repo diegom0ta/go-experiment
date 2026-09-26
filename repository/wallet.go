@@ -28,7 +28,7 @@ func (r *WalletRepository) FindOwnerWallets(ownerID string) ([]*domain.Wallet, e
 // FindWalletByName finds a wallet by its name
 func (r *WalletRepository) FindWalletByName(name string) (*domain.Wallet, error) {
 	var wallet domain.Wallet
-	result := database.DB.Where("name = ?", name).First(&wallet)
+	result := database.DB.Where("wallet_name = ?", name).First(&wallet)
 	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
 		return nil, errors.New("wallet not found")
 	}
